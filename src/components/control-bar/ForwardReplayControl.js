@@ -4,14 +4,15 @@ import React, { Component } from 'react';
 const propTypes = {
   actions: PropTypes.object,
   className: PropTypes.string,
-  seconds: PropTypes.oneOf([5, 10, 30])
+  seconds: PropTypes.oneOf([5, 10, 30]),
+  onclick: PropTypes.func
 };
 
 const defaultProps = {
   seconds: 10
 };
 
-export default (mode) => {
+export default mode => {
   class ForwardReplayControl extends Component {
     constructor(props, context) {
       super(props, context);
@@ -19,12 +20,18 @@ export default (mode) => {
     }
 
     handleClick() {
-      const { actions, seconds } = this.props;
+      const { actions, seconds, onClick } = this.props;
       // Depends mode to implement different actions
       if (mode === 'forward') {
         actions.forward(seconds);
+        if (onClick) {
+          onClick(seconds);
+        }
       } else {
         actions.replay(seconds);
+        if (onClick) {
+          onClick(seconds);
+        }
       }
     }
 
@@ -44,7 +51,7 @@ export default (mode) => {
       }
       return (
         <button
-          ref={(c) => {
+          ref={c => {
             this.button = c;
           }}
           className={classNames.join(' ')}

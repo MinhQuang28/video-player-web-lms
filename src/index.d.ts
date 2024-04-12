@@ -280,7 +280,6 @@ declare module 'video-react' {
     actions?: object;
     className?: string;
     seconds?: ForwardSecondsType; // = 10;
-    order?: number; // = 1;
   }
   class ForwardControl extends React.Component<ForwardControlPropsType> {}
 
@@ -288,7 +287,6 @@ declare module 'video-react' {
     actions?: object;
     className?: string;
     seconds?: ForwardSecondsType; // = 10;
-    order?: number; // = 1;
   }
   class ReplayControl extends React.Component<ReplayControlPropsType> {}
 

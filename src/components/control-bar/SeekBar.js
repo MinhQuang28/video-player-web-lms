@@ -12,7 +12,8 @@ const propTypes = {
   player: PropTypes.object,
   mouseTime: PropTypes.object,
   actions: PropTypes.object,
-  className: PropTypes.string
+  className: PropTypes.string,
+  isLive: PropTypes.bool
 };
 
 export default class SeekBar extends Component {
@@ -60,7 +61,10 @@ export default class SeekBar extends Component {
   handleMouseDown() {}
 
   handleMouseUp(event) {
-    const { actions } = this.props;
+    const { actions, isLive } = this.props;
+    if (isLive) {
+      return;
+    }
     const newTime = this.getNewTime(event);
     // Set new time (tell video to seek to new time)
     actions.seek(newTime);
@@ -68,7 +72,10 @@ export default class SeekBar extends Component {
   }
 
   handleMouseMove(event) {
-    const { actions } = this.props;
+    const { actions, isLive } = this.props;
+    if (isLive) {
+      return;
+    }
     const newTime = this.getNewTime(event);
     actions.handleSeekingTime(newTime);
   }
@@ -85,6 +92,7 @@ export default class SeekBar extends Component {
 
   render() {
     const {
+      isLive,
       player: { currentTime, seekingTime, duration, buffered },
       mouseTime
     } = this.props;
@@ -115,7 +123,10 @@ export default class SeekBar extends Component {
           duration={duration}
         />
         <MouseTimeDisplay duration={duration} mouseTime={mouseTime} />
-        <PlayProgressBar currentTime={time} duration={duration} />
+        <PlayProgressBar
+          currentTime={isLive ? duration : time}
+          duration={duration}
+        />
       </Slider>
     );
   }

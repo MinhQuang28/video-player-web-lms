@@ -7,8 +7,7 @@ import SeekBar from './SeekBar';
 
 const propTypes = {
   player: PropTypes.object,
-  className: PropTypes.string,
-  disableClick: PropTypes.bool
+  className: PropTypes.string
 };
 
 export default class ProgressControl extends Component {
@@ -45,7 +44,7 @@ export default class ProgressControl extends Component {
   }
 
   render() {
-    const { className, disableClick } = this.props;
+    const { className } = this.props;
     return (
       <div
         onMouseMove={this.handleMouseMoveThrottle}
@@ -57,7 +56,7 @@ export default class ProgressControl extends Component {
         <SeekBar
           mouseTime={this.state.mouseTime}
           ref={c => {
-            if (!disableClick) this.seekBar = c;
+            this.seekBar = c;
           }}
           {...this.props}
         />

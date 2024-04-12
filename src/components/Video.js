@@ -1,6 +1,6 @@
-import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import classNames from 'classnames';
 
 import { isVideoChild, mediaProperties, throttle } from '../utils';
 
@@ -436,9 +436,9 @@ export default class Video extends Component {
     const { actions, onTimeUpdate } = this.props;
     actions.handleTimeUpdate(this.getProperties());
 
-    // if (onTimeUpdate) {
-    //   onTimeUpdate(...args);
-    // }
+    if (onTimeUpdate) {
+      onTimeUpdate(...args);
+    }
   }
 
   /**

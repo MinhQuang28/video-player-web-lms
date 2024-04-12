@@ -41,7 +41,11 @@ export default class SeekBar extends Component {
    * @method getPercent
    */
   getPercent() {
+    const { isLive } = this.props;
     const { currentTime, seekingTime, duration } = this.props.player;
+    if (isLive) {
+      return 1;
+    }
     const time = seekingTime || currentTime;
     const percent = time / duration;
     return percent >= 1 ? 1 : percent;
@@ -124,7 +128,7 @@ export default class SeekBar extends Component {
         />
         <MouseTimeDisplay duration={duration} mouseTime={mouseTime} />
         <PlayProgressBar
-          currentTime={isLive ? duration : time}
+          currentTime={isLive ? time : duration}
           duration={duration}
         />
       </Slider>

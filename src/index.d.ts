@@ -1,6 +1,6 @@
 import React, { ReactEventHandler, ReactNode } from 'react';
 
-declare module 'video-react' {
+declare module 'video-player-web-lms' {
   type PreloadType = 'auto' | 'metadata' | 'none';
 
   interface PlayerPropsType {

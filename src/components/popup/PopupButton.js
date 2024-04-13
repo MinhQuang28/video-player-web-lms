@@ -1,27 +1,18 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import classNames from 'classnames';
+import PropTypes from 'prop-types';
 import ClickableComponent from '../ClickableComponent';
 import Popup from './Popup';
 
-const propTypes = {
-  inline: PropTypes.bool,
-  onClick: PropTypes.func.isRequired,
-  onFocus: PropTypes.func,
-  onBlur: PropTypes.func,
-  className: PropTypes.string
-};
-
-const defaultProps = {
-  inline: true
-};
-
-export default function PopupButton(props) {
-  const { inline, className } = props;
-  const ps = { ...props };
-  delete ps.children;
-  delete ps.inline;
-  delete ps.className;
+const PopupButton = ({
+  inline = true,
+  className,
+  onClick,
+  onFocus,
+  onBlur,
+  children
+}) => {
+  const ps = { onClick, onFocus, onBlur };
   return (
     <ClickableComponent
       className={classNames(
@@ -34,11 +25,19 @@ export default function PopupButton(props) {
       )}
       {...ps}
     >
-      <Popup {...props} />
+      <Popup>{children}</Popup>
     </ClickableComponent>
   );
-}
+};
 
-PopupButton.propTypes = propTypes;
-PopupButton.defaultProps = defaultProps;
+PopupButton.propTypes = {
+  inline: PropTypes.bool,
+  onClick: PropTypes.func.isRequired,
+  onFocus: PropTypes.func,
+  onBlur: PropTypes.func,
+  className: PropTypes.string
+};
+
 PopupButton.displayName = 'PopupButton';
+
+export default PopupButton;

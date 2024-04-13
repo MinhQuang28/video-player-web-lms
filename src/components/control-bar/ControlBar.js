@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 import ProgressControl from './ProgressControl';
@@ -15,23 +15,9 @@ import VolumeMenuButton from './VolumeMenuButton';
 import PlaybackRateMenuButton from './PlaybackRateMenuButton';
 import { mergeAndSortChildren } from '../../utils';
 
-const propTypes = {
-  children: PropTypes.any,
-  autoHide: PropTypes.bool,
-  autoHideTime: PropTypes.number, // used in Player
-  disableDefaultControls: PropTypes.bool,
-  disableCompletely: PropTypes.bool,
-  className: PropTypes.string
-};
-
-const defaultProps = {
-  autoHide: true,
-  disableCompletely: false
-};
-
-export default class ControlBar extends Component {
-  constructor(props) {
-    super(props);
+class ControlBar extends Component {
+  constructor(props, context) {
+    super(props, context);
 
     this.getDefaultChildren = this.getDefaultChildren.bind(this);
     this.getFullChildren = this.getFullChildren.bind(this);
@@ -98,6 +84,20 @@ export default class ControlBar extends Component {
   }
 }
 
-ControlBar.propTypes = propTypes;
-ControlBar.defaultProps = defaultProps;
+ControlBar.propTypes = {
+  children: PropTypes.any,
+  autoHide: PropTypes.bool,
+  autoHideTime: PropTypes.number, // used in Player
+  disableDefaultControls: PropTypes.bool,
+  disableCompletely: PropTypes.bool,
+  className: PropTypes.string
+};
+
+ControlBar.defaultProps = {
+  autoHide: true,
+  disableCompletely: false
+};
+
 ControlBar.displayName = 'ControlBar';
+
+export default ControlBar;

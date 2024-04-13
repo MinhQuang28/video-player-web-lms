@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 import PopupButton from '../popup/PopupButton';
@@ -11,10 +11,6 @@ const propTypes = {
   vertical: PropTypes.bool,
   className: PropTypes.string,
   alwaysShowVolume: PropTypes.bool
-};
-
-const defaultProps = {
-  vertical: false
 };
 
 class VolumeMenuButton extends Component {
@@ -63,7 +59,7 @@ class VolumeMenuButton extends Component {
   }
 
   render() {
-    const { vertical, player, className } = this.props;
+    const { vertical, player, className, alwaysShowVolume } = this.props;
     const inline = !vertical;
     const level = this.volumeLevel;
     return (
@@ -78,10 +74,8 @@ class VolumeMenuButton extends Component {
             'video-react-vol-1': level === 1,
             'video-react-vol-2': level === 2,
             'video-react-vol-3': level === 3,
-            'video-react-slider-active':
-              this.props.alwaysShowVolume || this.state.active,
-            'video-react-lock-showing':
-              this.props.alwaysShowVolume || this.state.active
+            'video-react-slider-active': alwaysShowVolume || this.state.active,
+            'video-react-lock-showing': alwaysShowVolume || this.state.active
           },
           'video-react-volume-menu-button'
         )}
@@ -99,6 +93,6 @@ class VolumeMenuButton extends Component {
 }
 
 VolumeMenuButton.propTypes = propTypes;
-VolumeMenuButton.defaultProps = defaultProps;
 VolumeMenuButton.displayName = 'VolumeMenuButton';
+
 export default VolumeMenuButton;

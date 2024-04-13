@@ -1,88 +1,29 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
-
 import Manager from '../Manager';
-
-import BigPlayButton from './BigPlayButton';
-import LoadingSpinner from './LoadingSpinner';
-import PosterImage from './PosterImage';
-import Video from './Video';
-import Bezel from './Bezel';
-import Shortcut from './Shortcut';
-import ControlBar from './control-bar/ControlBar';
-
 import * as browser from '../utils/browser';
 import { focusNode } from '../utils/dom';
 import { mergeAndSortChildren, isVideoChild, throttle } from '../utils';
 import fullscreen from '../utils/fullscreen';
+import Video from './Video';
+import PosterImage from './PosterImage';
+import LoadingSpinner from './LoadingSpinner';
+import Bezel from './Bezel';
+import BigPlayButton from './BigPlayButton';
+import ControlBar from './control-bar/ControlBar';
+import Shortcut from './Shortcut';
 
-const propTypes = {
-  children: PropTypes.any,
-
-  width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  fluid: PropTypes.bool,
-  muted: PropTypes.bool,
-  playsInline: PropTypes.bool,
-  aspectRatio: PropTypes.string,
-  className: PropTypes.string,
-  videoId: PropTypes.string,
-
-  startTime: PropTypes.number,
-  loop: PropTypes.bool,
-  autoPlay: PropTypes.bool,
-  src: PropTypes.string,
-  poster: PropTypes.string,
-  preload: PropTypes.oneOf(['auto', 'metadata', 'none']),
-
-  onLoadStart: PropTypes.func,
-  onWaiting: PropTypes.func,
-  onCanPlay: PropTypes.func,
-  onCanPlayThrough: PropTypes.func,
-  onPlaying: PropTypes.func,
-  onEnded: PropTypes.func,
-  onSeeking: PropTypes.func,
-  onSeeked: PropTypes.func,
-  onPlay: PropTypes.func,
-  onPause: PropTypes.func,
-  onProgress: PropTypes.func,
-  onDurationChange: PropTypes.func,
-  onError: PropTypes.func,
-  onSuspend: PropTypes.func,
-  onAbort: PropTypes.func,
-  onEmptied: PropTypes.func,
-  onStalled: PropTypes.func,
-  onLoadedMetadata: PropTypes.func,
-  onLoadedData: PropTypes.func,
-  onTimeUpdate: PropTypes.func,
-  onRateChange: PropTypes.func,
-  onVolumeChange: PropTypes.func,
-
-  store: PropTypes.object
-};
-
-const defaultProps = {
-  fluid: true,
-  muted: false,
-  playsInline: false,
-  preload: 'auto',
-  aspectRatio: 'auto'
-};
-
-export default class Player extends Component {
-  constructor(props) {
-    super(props);
-
+class Player extends Component {
+  constructor(props, context) {
+    super(props, context);
     this.controlsHideTimer = null;
-
     this.video = null; // the Video component
     this.manager = new Manager(props.store);
     this.actions = this.manager.getActions();
     this.manager.subscribeToPlayerStateChange(
       this.handleStateChange.bind(this)
     );
-
     this.getStyle = this.getStyle.bind(this);
     this.handleResize = this.handleResize.bind(this);
     this.getChildren = this.getChildren.bind(this);
@@ -98,12 +39,10 @@ export default class Player extends Component {
   componentDidMount() {
     this.handleResize();
     window.addEventListener('resize', this.handleResize);
-
     fullscreen.addEventListener(this.handleFullScreenChange);
   }
 
   componentWillUnmount() {
-    // Remove event listener
     window.removeEventListener('resize', this.handleResize);
     fullscreen.removeEventListener(this.handleFullScreenChange);
     if (this.controlsHideTimer) {
@@ -134,7 +73,7 @@ export default class Player extends Component {
 
   getChildren(props) {
     const {
-      className: _, // remove className
+      className: _,
       children: originalChildren,
       ...propsWithoutChildren
     } = props;
@@ -178,45 +117,34 @@ export default class Player extends Component {
     let height;
     let aspectRatio;
 
-    // The aspect ratio is either used directly or to calculate width and height.
     if (propsAspectRatio !== undefined && propsAspectRatio !== 'auto') {
-      // Use any aspectRatio that's been specifically set
       aspectRatio = propsAspectRatio;
     } else if (player.videoWidth) {
-      // Otherwise try to get the aspect ratio from the video metadata
       aspectRatio = `${player.videoWidth}:${player.videoHeight}`;
     } else {
-      // Or use a default. The video element's is 2:1, but 16:9 is more common.
       aspectRatio = '16:9';
     }
 
-    // Get the ratio as a decimal we can use to calculate dimensions
     const ratioParts = aspectRatio.split(':');
     const ratioMultiplier = ratioParts[1] / ratioParts[0];
 
     if (propsWidth !== undefined) {
-      // Use any width that's been specifically set
       width = propsWidth;
     } else if (propsHeight !== undefined) {
-      // Or calulate the width from the aspect ratio if a height has been set
       width = propsHeight / ratioMultiplier;
     } else {
-      // Or use the video's metadata, or use the video el's default of 300
       width = player.videoWidth || 400;
     }
 
     if (propsHeight !== undefined) {
-      // Use any height that's been specifically set
       height = propsHeight;
     } else {
-      // Otherwise calculate the height from the ratio and the width
       height = width * ratioMultiplier;
     }
 
     if (fluid) {
       style.paddingTop = `${ratioMultiplier * 100}%`;
     } else {
-      // If Width contains "auto", set "auto" in style
       this.setWidthOrHeight(style, 'width', width);
       this.setWidthOrHeight(style, 'height', height);
     }
@@ -224,19 +152,14 @@ export default class Player extends Component {
     return style;
   }
 
-  // get redux state
-  // { player, operation }
   getState() {
     return this.manager.getState();
   }
 
-  // get playback rate
   get playbackRate() {
     return this.video.playbackRate;
   }
 
-  // set playback rate
-  // speed of video
   set playbackRate(rate) {
     this.video.playbackRate = rate;
   }
@@ -257,67 +180,54 @@ export default class Player extends Component {
     this.video.volume = val;
   }
 
-  // video width
   get videoWidth() {
     return this.video.videoWidth;
   }
 
-  // video height
   get videoHeight() {
     return this.video.videoHeight;
   }
 
-  // play the video
   play() {
     this.video.play();
   }
 
-  // pause the video
   pause() {
     this.video.pause();
   }
 
-  // Change the video source and re-load the video:
   load() {
     this.video.load();
   }
 
-  // Add a new text track to the video
   addTextTrack(...args) {
     this.video.addTextTrack(...args);
   }
 
-  // Check if your browser can play different types of video:
   canPlayType(...args) {
     this.video.canPlayType(...args);
   }
 
-  // seek video by time
   seek(time) {
     this.video.seek(time);
   }
 
-  // jump forward x seconds
   forward(seconds) {
     this.video.forward(seconds);
   }
 
-  // jump back x seconds
   replay(seconds) {
     this.video.replay(seconds);
   }
 
-  // enter or exist full screen
   toggleFullscreen() {
     this.video.toggleFullscreen();
   }
 
-  // subscribe to player state change
   subscribeToStateChange(listener) {
     return this.manager.subscribeToPlayerStateChange(listener);
   }
 
-  // player resize
   handleResize() {}
 
   handleFullScreenChange(event) {
@@ -334,10 +244,8 @@ export default class Player extends Component {
     this.startControlsTimer();
   }
 
-  handleKeyDown(e) {
-    e.preventDefault();
-
-    // this.startControlsTimer();
+  handleKeyDown() {
+    this.startControlsTimer();
   }
 
   startControlsTimer() {
@@ -363,10 +271,9 @@ export default class Player extends Component {
   handleStateChange(state, prevState) {
     if (state.isFullscreen !== prevState.isFullscreen) {
       this.handleResize();
-      // focus root when switching fullscreen mode to avoid confusion #276
       focusNode(this.manager.rootElement);
     }
-    this.forceUpdate(); // re-render
+    this.forceUpdate();
   }
 
   handleFocus() {
@@ -388,7 +295,6 @@ export default class Player extends Component {
       isFullscreen,
       userActivity
     } = player;
-
     const props = {
       ...this.props,
       player,
@@ -438,7 +344,55 @@ export default class Player extends Component {
   }
 }
 
-Player.contextTypes = { store: PropTypes.object };
-Player.propTypes = propTypes;
-Player.defaultProps = defaultProps;
+Player.propTypes = {
+  children: PropTypes.any,
+  width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  fluid: PropTypes.bool,
+  muted: PropTypes.bool,
+  playsInline: PropTypes.bool,
+  aspectRatio: PropTypes.string,
+  className: PropTypes.string,
+  videoId: PropTypes.string,
+  startTime: PropTypes.number,
+  loop: PropTypes.bool,
+  autoPlay: PropTypes.bool,
+  src: PropTypes.string,
+  poster: PropTypes.string,
+  preload: PropTypes.oneOf(['auto', 'metadata', 'none']),
+  onLoadStart: PropTypes.func,
+  onWaiting: PropTypes.func,
+  onCanPlay: PropTypes.func,
+  onCanPlayThrough: PropTypes.func,
+  onPlaying: PropTypes.func,
+  onEnded: PropTypes.func,
+  onSeeking: PropTypes.func,
+  onSeeked: PropTypes.func,
+  onPlay: PropTypes.func,
+  onPause: PropTypes.func,
+  onProgress: PropTypes.func,
+  onDurationChange: PropTypes.func,
+  onError: PropTypes.func,
+  onSuspend: PropTypes.func,
+  onAbort: PropTypes.func,
+  onEmptied: PropTypes.func,
+  onStalled: PropTypes.func,
+  onLoadedMetadata: PropTypes.func,
+  onLoadedData: PropTypes.func,
+  onTimeUpdate: PropTypes.func,
+  onRateChange: PropTypes.func,
+  onVolumeChange: PropTypes.func,
+  store: PropTypes.object
+};
+
+Player.defaultProps = {
+  fluid: true,
+  muted: false,
+  playsInline: false,
+  preload: 'auto',
+  aspectRatio: 'auto'
+};
+
 Player.displayName = 'Player';
+
+export default Player;
